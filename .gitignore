@@ -1,0 +1,16 @@
+# Ignore WiFi Details header which includes access keys
+firmware/include/WiFiDetails.h
+
+# Ignore DB connection parameters as they are private:
+web/db_config.php
+
+# And our secret key to validate POST requests
+web/secret_key.php
+
+# And the Basic Auth users file:
+web/users.txt
+
+# No testing stuff
+test.*
+
+
