@@ -1,0 +1,30 @@
+# Only for receiving POST requests from our probes:
+server {
+
+	listen 8585;
+	server_name 192.168.0.111;
+	index index.php;
+	root /path/to/root/endpoints;
+
+	location / {
+		allow 192.168.0.0/24;
+		deny all;
+	}
+        # Don't serve . files that we are editing
+        location ~ /\. { access_log off; log_not_found off; deny all; }
+        location ~ ~$ { access_log off; log_not_found off; deny all; }
+
+        # Allow PHP:
+        location ~ \.php$ {
+                try_files $uri =404;
+                allow 127.0.0.1;
+                allow 192.168.0.0/24;
+		deny all;
+                include fastcgi_params;
+                fastcgi_pass php7-fpm-sock;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_intercept_errors on;
+        }
+
+
+}

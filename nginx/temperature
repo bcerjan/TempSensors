@@ -1,0 +1,47 @@
+server {
+
+	root /path/to/root;
+	index index.php;
+
+	server_name server.name.here;
+
+
+	location / {
+		try_files $uri $uri/ =404;
+		auth_basic "Please Login";
+		auth_basic_user_file "path/to/users/file";
+	}
+
+	# Don't serve . files that we are editing
+	location ~ /\. { access_log off; log_not_found off; deny all; }
+	location ~ ~$ { access_log off; log_not_found off; deny all; }
+
+	# Allow PHP:
+	location ~ \.php$ {
+		try_files $uri =404;
+		include fastcgi_params;
+		fastcgi_pass php7-fpm-sock;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_intercept_errors on;
+	}
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /path/to/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /path/to/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = server.name.here) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+
+    server_name server.name.here;
+    listen 80;
+    return 404; # managed by Certbot
+
+}
