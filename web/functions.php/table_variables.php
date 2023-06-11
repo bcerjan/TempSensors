@@ -1,0 +1,2 @@
+<?php
+$dataTable = 'data';
